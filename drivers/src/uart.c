@@ -8,11 +8,11 @@ void uart_init(void){
     rcc_enable_gpio(GPIOA_EN);
     rcc_enable_uart(USART2_EN);
 
-    GPIOA_MODER &= ~((3 << (2*2)) | (3 << (3*2))); //Clear Pins 2 and 3
-    GPIOA_MODER |= ((2 << (2*2)) | (2 << (3*2))); //Sets to AF mode
+    GPIO_MODER(GPIOA_BASE) &= ~((3 << (2*2)) | (3 << (3*2))); //Clear Pins 2 and 3
+    GPIO_MODER(GPIOA_BASE) |= ((2 << (2*2)) | (2 << (3*2))); //Sets to AF mode
 
-    GPIOA_AFRL &= ~((0xF << (2*4)) | (0xF << (3*4))); //Clear 
-    GPIOA_AFRL |= ((7 << (2*4)) | (7 << (3*4))); //Selecting AF to USART2
+    GPIO_AFRL(GPIOA_BASE) &= ~((0xF << (2*4)) | (0xF << (3*4))); //Clear 
+    GPIO_AFRL(GPIOA_BASE) |= ((7 << (2*4)) | (7 << (3*4))); //Selecting AF to USART2
 
     USART2_BRR = 0x1250; //9600 BaudRate (Condition: Peripheral Clock (APB1) = 45MHz)
 

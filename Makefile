@@ -1,5 +1,3 @@
-# AstraRTOS - Makefile for stm32f429zi
-
 PREFIX = arm-none-eabi-
 CC = $(PREFIX)gcc
 AS = $(PREFIX)gcc -x assembler-with-cpp
@@ -11,7 +9,7 @@ SIZE = $(PREFIX)size 	   # prints table with sizes
 TARGET = astra
 BUILD = build
 
-C_SOURCES = app/main.c kernel/port/system_init.c drivers/src/rcc.c drivers/src/uart.c
+C_SOURCES = app/main.c kernel/port/system_init.c drivers/src/rcc.c drivers/src/uart.c drivers/src/gpio.c
 AS_SOURCES = kernel/port/startup_stm32f429zi.s 
 
 LDSCRIPT = link/stm32f429zi.ld 
