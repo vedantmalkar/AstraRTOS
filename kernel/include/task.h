@@ -6,10 +6,20 @@
 #define OS_MAX_TASKS_NUM 5
 #define OS_TASK_STACK_SIZE 128
 
+typedef enum {
+    TASK_READY,
+    TASK_BLOCKED,
+}os_task_state;
+
 typedef struct {
     uint32_t *stack_ptr;
     int task_num;
+    os_task_state state;
+    uint32_t delay_ticks;
 } os_tcb_t;
+
+void os_delay(uint32_t t);
+void os_decrement_blocked_tasks(void);
 
 extern os_tcb_t *os_current_task_ptr;
 extern void os_schedule_next_task(void);

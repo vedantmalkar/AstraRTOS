@@ -1,5 +1,6 @@
 #include "task.h"
 #define SHPR3 (*(volatile uint8_t *)0xE000ED22)  /*sets PendSV priority*/
+#define ICSR (*((volatile uint32_t *)0xE000ED04))
 
 os_tcb_t os_tasks[OS_MAX_TASKS_NUM];
 uint32_t os_task_stacks[OS_MAX_TASKS_NUM][OS_TASK_STACK_SIZE];
@@ -24,6 +25,8 @@ int os_task_create(void (*task_function)(void)){
 
     task->stack_ptr = task_stack_ptr;
     task->task_num = os_task_count;
+    task->state = TASK_READY;
+    task->delay_ticks = 0;
 
     if(os_task_count == 0){
         os_current_task_ptr = task;
@@ -32,14 +35,49 @@ int os_task_create(void (*task_function)(void)){
     return 0;
 }
 
+void os_delay(uint32_t ticks){
+    __asm volatile ("cpsid i");
+    os_current_task_ptr->delay_ticks = ticks;
+    os_current_task_ptr->state = TASK_BLOCKED;
+    __asm volatile ("cpsie i");
+    ICSR |= (1 << 28);
+}
+
+void os_decrement_blocked_tasks(void){
+    for(uint32_t i = 0; i < os_task_count; i++){
+        if(os_tasks[i].state == TASK_BLOCKED && os_tasks[i].delay_ticks > 0){
+            os_tasks[i].delay_ticks -= 1;
+            if(os_tasks[i].delay_ticks == 0){
+                os_tasks[i].state = TASK_READY;
+            }
+        }
+    }
+}
+
+
 void os_schedule_next_task(void){
     if (os_task_count > 0) {
         int next_task = (os_current_task_ptr->task_num + 1) % os_task_count;
-        os_current_task_ptr = &os_tasks[next_task];
+        for(uint32_t i = 0; i < os_task_count; i++){
+            if(os_tasks[next_task].state == TASK_READY){
+                os_current_task_ptr = &os_tasks[next_task];
+                return;
+            }
+            else{
+                next_task = (next_task + 1) % os_task_count;
+            }
+        }
+    }
+}
+
+static void os_idle_task(void){
+    while(1){
+        __asm volatile ("wfi"); // CPU sleep 
     }
 }
 
 void os_start(void) {
+    os_task_create(os_idle_task);   // default to sleep
     SHPR3 = 255;              /*sets PendSV to lowest priority*/
     __asm volatile ("svc 0"); /*triggers SVC*/
 }
