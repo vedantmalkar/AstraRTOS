@@ -9,7 +9,7 @@ SIZE = $(PREFIX)size 	   # prints table with sizes
 TARGET = astra
 BUILD = build
 
-C_SOURCES = app/main.c kernel/port/system_init.c drivers/src/rcc.c drivers/src/uart.c drivers/src/gpio.c kernel/src/task.c
+C_SOURCES = app/main.c kernel/port/system_init.c drivers/src/rcc.c drivers/src/uart.c drivers/src/gpio.c kernel/src/task.c kernel/src/mutex.c
 AS_SOURCES = kernel/port/startup_stm32f429zi.s 
 
 LDSCRIPT = link/stm32f429zi.ld 

@@ -81,3 +81,7 @@ void os_start(void) {
     SHPR3 = 255;              /*sets PendSV to lowest priority*/
     __asm volatile ("svc 0"); /*triggers SVC*/
 }
+
+uint32_t os_get_task_count(){
+    return os_task_count;
+}

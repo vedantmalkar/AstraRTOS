@@ -9,6 +9,7 @@
 typedef enum {
     TASK_READY,
     TASK_BLOCKED,
+    TASK_MUTEX_WAITING,
 }os_task_state;
 
 typedef struct {
@@ -16,6 +17,7 @@ typedef struct {
     int task_num;
     os_task_state state;
     uint32_t delay_ticks;
+    void *waiting_for_resource;
 } os_tcb_t;
 
 void os_delay(uint32_t t);
