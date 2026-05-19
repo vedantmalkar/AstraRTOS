@@ -14,4 +14,5 @@ Minimal RTOS built from scratch for STM32F429ZI (Cortex-M4)
 make          # build
 make flash    # flash to board
 make clean    # clean build files
+make qemu     # run in qemu
 ```

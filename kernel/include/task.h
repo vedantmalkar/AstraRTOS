@@ -3,8 +3,7 @@
 
 #include <stdint.h>
 
-#define OS_MAX_TASKS_NUM 5
-#define OS_TASK_STACK_SIZE 128
+#define OS_MAX_TASKS_NUM 20
 
 typedef enum {
     TASK_READY,
@@ -29,7 +28,7 @@ void os_decrement_blocked_tasks(void);
 extern os_tcb_t *os_current_task_ptr;
 extern void os_schedule_next_task(void);
 
-int os_task_create(void (*task_fucntion)(void), uint32_t priority);
+int os_task_create(void (*task_fucntion)(void), uint32_t priority, uint32_t stack_size);
 void os_start(void);
 
 #endif
