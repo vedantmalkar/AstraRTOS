@@ -19,7 +19,9 @@ typedef struct {
     os_task_state state;
     uint32_t delay_ticks;
     void *waiting_for_resource;
-} os_tcb_t;
+    uint32_t priority;
+    uint32_t base_priority;
+}os_tcb_t;
 
 void os_delay(uint32_t t);
 void os_decrement_blocked_tasks(void);
@@ -27,7 +29,7 @@ void os_decrement_blocked_tasks(void);
 extern os_tcb_t *os_current_task_ptr;
 extern void os_schedule_next_task(void);
 
-int os_task_create(void (*task_fucntion)(void));
+int os_task_create(void (*task_fucntion)(void), uint32_t priority);
 void os_start(void);
 
 #endif

@@ -8,7 +8,7 @@ os_tcb_t *os_current_task_ptr = 0;
 
 static uint32_t os_task_count = 0;
 
-int os_task_create(void (*task_function)(void)){
+int os_task_create(void (*task_function)(void), uint32_t priority){
     if(os_task_count >= OS_MAX_TASKS_NUM){
         return -1;
     }
@@ -27,6 +27,8 @@ int os_task_create(void (*task_function)(void)){
     task->task_num = os_task_count;
     task->state = TASK_READY;
     task->delay_ticks = 0;
+    task->priority = priority;
+    task->base_priority = priority;
 
     if(os_task_count == 0){
         os_current_task_ptr = task;
@@ -56,16 +58,21 @@ void os_decrement_blocked_tasks(void){
 
 
 void os_schedule_next_task(void){
+    uint32_t best_priority  = -1;
+    int chosen_index = -1;
     if (os_task_count > 0) {
         int next_task = (os_current_task_ptr->task_num + 1) % os_task_count;
         for(uint32_t i = 0; i < os_task_count; i++){
             if(os_tasks[next_task].state == TASK_READY){
-                os_current_task_ptr = &os_tasks[next_task];
-                return;
+                if(chosen_index == -1 || (os_tasks[next_task].priority > best_priority)){
+                    best_priority = os_tasks[next_task].priority;
+                    chosen_index = next_task;
+                }
             }
-            else{
-                next_task = (next_task + 1) % os_task_count;
-            }
+            next_task = (next_task + 1) % os_task_count;    
+        }
+        if(chosen_index != -1){
+            os_current_task_ptr = &os_tasks[chosen_index];
         }
     }
 }
@@ -77,7 +84,7 @@ static void os_idle_task(void){
 }
 
 void os_start(void) {
-    os_task_create(os_idle_task);   // default to sleep
+    os_task_create(os_idle_task, 0);   // default to sleep
     SHPR3 = 255;              /*sets PendSV to lowest priority*/
     __asm volatile ("svc 0"); /*triggers SVC*/
 }

@@ -34,12 +34,19 @@ void os_sem_give(os_sem_t *sem){
     if(sem->count < sem->max_count){
         sem->count++;
     }
+    uint32_t best_priority  = 0;
+    int chosen_index = -1;
     for(uint32_t i =0; i < os_get_task_count(); i++){
         if(os_tasks[i].state == TASK_SEM_WAITING && os_tasks[i].waiting_for_resource == sem){
-            os_tasks[i].state = TASK_READY;
-            os_tasks[i].waiting_for_resource = 0;
-            break;         
+            if(chosen_index == -1 || (os_tasks[i].priority > best_priority)){
+                best_priority = os_tasks[i].priority;
+                chosen_index = i;
+            }
         }
     }
+    if(chosen_index != -1){
+        os_tasks[chosen_index].state = TASK_READY;
+        os_tasks[chosen_index].waiting_for_resource = 0;
+    }    
     __asm volatile ("cpsie i");
 }
