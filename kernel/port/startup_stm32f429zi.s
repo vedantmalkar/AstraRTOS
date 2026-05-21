@@ -25,6 +25,11 @@ _vector_table:
     .word 0                  /* 0x34: Reserved */
     .word PendSV_Handler     /* 0x38: PendSV - context switch */
     .word SysTick_Handler    /* 0x3C: SysTick -  RTOS tick */
+    .rept 37
+    .word default            /* Default Handlers */
+    .endr
+    .word USART1_IRQHandler /* 0xD4: IRQ Handler for USART1 */
+    .word USART2_IRQHandler /* 0xD8: IRQ Handler for USART2 */
 
 
 .section .text                  /* reset handler */
@@ -70,6 +75,9 @@ hang:
 .weak BusFault_Handler
 .weak UsageFault_Handler
 .weak SysTick_Handler
+.weak default
+.weak USART1_IRQHandler
+.weak USART2_IRQHandler
 
 NMI_Handler:
 HardFault_Handler:
@@ -77,6 +85,9 @@ MemManage_Handler:
 BusFault_Handler:
 UsageFault_Handler:
 SysTick_Handler:
+default:
+USART1_IRQHandler:
+USART2_IRQHandler:
     b .
 
 .extern os_current_task_ptr
