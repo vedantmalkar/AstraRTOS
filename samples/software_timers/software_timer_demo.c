@@ -1,4 +1,6 @@
+#include "system_init.h"
 #include "task.h"
+#include "heap.h"
 #include "timer.h"
 
 static os_timer_t timer_a;
@@ -29,6 +31,11 @@ static void task_timer_demo(void){
     }
 }
 
-void app_timer_demo_start(void){
+int main(void){
+    system_init();
+    systick_init();
+    os_heap_init();
     os_task_create(task_timer_demo, 2, 256);
+    os_start();
+    return 0;
 }
