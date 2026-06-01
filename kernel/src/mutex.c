@@ -47,7 +47,18 @@ void os_mutex_give(os_mutex_t *mutex){
         }
         mutex->is_locked = 0;
         mutex->task_num_owner = -1;
-        os_current_task_ptr->priority = os_current_task_ptr->base_priority;
+        uint32_t new_priority = os_current_task_ptr->base_priority;
+        for(uint32_t i = 0; i < os_get_task_count(); i++){
+            if(os_tasks[i].state == TASK_MUTEX_WAITING){
+                os_mutex_t* temp_mutex = (void *)os_tasks[i].waiting_for_resource;
+                if(temp_mutex->task_num_owner == os_current_task_ptr->task_num){
+                    if(os_tasks[i].priority > new_priority){
+                        new_priority = os_tasks[i].priority;
+                    }
+                }
+            }
+        }
+        os_current_task_ptr->priority = new_priority;
         uint32_t best_priority  = 0;
         int chosen_index = -1;
         for(uint32_t i = 0; i < os_get_task_count() ; i++){
