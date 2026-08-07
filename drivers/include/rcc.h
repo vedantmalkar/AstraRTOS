@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+/* EN defines prefered not be used in
+ * kernel, needs updating in uart rn
+ */
+
 #define GPIOA_EN 0
 #define GPIOB_EN 1
 #define GPIOC_EN 2
